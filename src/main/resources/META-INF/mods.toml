@@ -1,0 +1,24 @@
+modLoader="javafml" #mandatory
+loaderVersion="[28,)" #mandatory (28 is current forge version)
+[[mods]]
+modId="fishingreal" #mandatory
+version="${file.jarVersion}" #mandatory
+displayName="Fishing Real" #mandatory
+authors="ExpensiveKoala" #optional
+description='''
+A mod which allows you to reel in real fish instead of the fish in item form.
+'''
+# A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
+[[dependencies.fishingreal]] #optional
+    modId="forge"
+    mandatory=true
+    versionRange="[28,)"
+    ordering="NONE"
+    side="BOTH"
+# Here's another dependency
+[[dependencies.fishingreal]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.14.4]"
+    ordering="NONE"
+    side="BOTH"
