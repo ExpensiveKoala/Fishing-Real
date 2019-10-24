@@ -1,11 +1,13 @@
 package koala.fishingreal;
 
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -22,6 +24,7 @@ import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Mod("fishingreal")
@@ -45,13 +48,13 @@ public class FishingReal {
 		PlayerEntity angler = event.getPlayer();
 		FishingBobberEntity hook = event.getHookEntity();
 		List<ItemStack> drops = event.getDrops();
-		for(ItemStack stack : drops) {
+		for (ItemStack stack : drops) {
 			CompoundNBT nbt = FISHING_MANAGER.matchWithStack(stack);
-			if(nbt != null) {
+			if (nbt != null) {
 				EntityType.func_220335_a(nbt, angler.getEntityWorld(), (entity -> {
 					//spawn with velocity to fling towards player
 					World w = angler.getEntityWorld();
-					if(w instanceof ServerWorld) {
+					if (w instanceof ServerWorld) {
 						ServerWorld world = (ServerWorld) w;
 						entity.setLocationAndAngles(hook.posX, hook.posY, hook.posZ, hook.rotationYaw, hook.rotationPitch);
 						double dX = angler.posX - hook.posX;
@@ -60,14 +63,18 @@ public class FishingReal {
 						double mult = 0.12;
 						entity.setMotion(dX * mult, dY * mult + Math.sqrt(Math.sqrt(dX * dX + dY * dY + dZ * dZ)) * 0.14D, dZ * mult);
 						
-						world.addEntity(new ExperienceOrbEntity(angler.world, angler.posX,angler.posY + 0.5D, angler.posZ + 0.5D, angler.world.getRandom().nextInt(6) + 1));
+						world.addEntity(new ExperienceOrbEntity(angler.world, angler.posX, angler.posY + 0.5D, angler.posZ + 0.5D, angler.world.getRandom().nextInt(6) + 1));
 						
-						if(stack.getItem().isIn(ItemTags.FISHES)) {
+						if (stack.getItem().isIn(ItemTags.FISHES)) {
 							angler.addStat(Stats.FISH_CAUGHT, 1);
 						}
 						
-						if(FISHING_MANAGER.getConversionFromStack(stack).isRandomizeNBT()) {
-							if(entity instanceof MobEntity) {
+						if (angler instanceof ServerPlayerEntity) {
+							CriteriaTriggers.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity) angler, angler.getActiveItemStack(), hook, Arrays.asList(stack));
+						}
+						
+						if (FISHING_MANAGER.getConversionFromStack(stack).isRandomizeNBT()) {
+							if (entity instanceof MobEntity) {
 								((MobEntity) entity).onInitialSpawn(world, world.getDifficultyForLocation(angler.getPosition()), SpawnReason.NATURAL, null, null);
 							}
 						}
@@ -76,7 +83,7 @@ public class FishingReal {
 					} else return null;
 					
 				}));
-				if(!angler.isCreative()) {
+				if (!angler.isCreative()) {
 					event.damageRodBy(1);
 				}
 				event.setCanceled(true);
