@@ -19,6 +19,15 @@ public class FishingConversion {
 		this.randomizeNBT = randomizeNBT;
 	}
 	
+	@Override
+	public String toString() {
+		return "FishingConversion{" +
+		  "stack=" + stack +
+		  ", target=" + target +
+		  ", randomizeNBT=" + randomizeNBT +
+		  '}';
+	}
+	
 	public ItemStack getStack() {
 		return stack;
 	}

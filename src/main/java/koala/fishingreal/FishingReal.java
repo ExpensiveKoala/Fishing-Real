@@ -1,7 +1,6 @@
 package koala.fishingreal;
 
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.SpawnReason;
@@ -20,7 +19,6 @@ import net.minecraftforge.event.entity.player.ItemFishedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -56,14 +54,14 @@ public class FishingReal {
 					World w = angler.getEntityWorld();
 					if (w instanceof ServerWorld) {
 						ServerWorld world = (ServerWorld) w;
-						entity.setLocationAndAngles(hook.posX, hook.posY, hook.posZ, hook.rotationYaw, hook.rotationPitch);
-						double dX = angler.posX - hook.posX;
-						double dY = angler.posY - hook.posY;
-						double dZ = angler.posZ - hook.posZ;
+						entity.setLocationAndAngles(hook.getPosition().getX(), hook.getPosition().getY(), hook.getPosition().getZ(), hook.rotationYaw, hook.rotationPitch);
+						double dX = angler.getPosition().getX() - hook.getPosition().getX();
+						double dY = angler.getPosition().getY() - hook.getPosition().getY();
+						double dZ = angler.getPosition().getZ() - hook.getPosition().getZ();
 						double mult = 0.12;
 						entity.setMotion(dX * mult, dY * mult + Math.sqrt(Math.sqrt(dX * dX + dY * dY + dZ * dZ)) * 0.14D, dZ * mult);
 						
-						world.addEntity(new ExperienceOrbEntity(angler.world, angler.posX, angler.posY + 0.5D, angler.posZ + 0.5D, angler.world.getRandom().nextInt(6) + 1));
+						world.addEntity(new ExperienceOrbEntity(angler.world, angler.getPosition().getX(), angler.getPosition().getY() + 0.5D, angler.getPosition().getZ() + 0.5D, angler.world.getRandom().nextInt(6) + 1));
 						
 						if (stack.getItem().isIn(ItemTags.FISHES)) {
 							angler.addStat(Stats.FISH_CAUGHT, 1);

@@ -16,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +56,9 @@ public class FishingManager extends JsonReloadListener {
 			if (resourcelocation.getPath().startsWith("_")) continue;
 			
 			try {
-				output.add(GSON_INSTANCE.fromJson(entry.getValue(), FishingConversion.class));
+				FishingConversion conversion = GSON_INSTANCE.fromJson(entry.getValue(), FishingConversion.class);
+				output.removeIf(conv -> StackUtils.doItemStacksMatchIgnoreNBT(conversion.getStack(), conv.getStack()));
+				output.add(conversion);
 			} catch (IllegalArgumentException | JsonParseException jsonparseexception) {
 				LOGGER.error("Parsing error loading fishing conversion {}", resourcelocation, jsonparseexception);
 			}
