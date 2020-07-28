@@ -3,7 +3,7 @@ package koala.fishingreal;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import koala.fishingreal.util.StackUtils;
 import net.minecraft.client.resources.JsonReloadListener;
@@ -16,7 +16,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -48,10 +47,11 @@ public class FishingManager extends JsonReloadListener {
 		return null;
 	}
 	
+
 	@Override
-	protected void apply(Map<ResourceLocation, JsonObject> splashList, IResourceManager resourceManagerIn, IProfiler profilerIn) {
+	protected void apply(Map<ResourceLocation, JsonElement> objectIn, IResourceManager resourceManagerIn, IProfiler profilerIn) {
 		List<FishingConversion> output = new ArrayList<>();
-		for (Map.Entry<ResourceLocation, JsonObject> entry: splashList.entrySet()){
+		for (Map.Entry<ResourceLocation, JsonElement> entry : objectIn.entrySet()) {
 			ResourceLocation resourcelocation = entry.getKey();
 			if (resourcelocation.getPath().startsWith("_")) continue;
 			

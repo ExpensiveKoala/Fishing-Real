@@ -1,5 +1,11 @@
 package koala.fishingreal;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
@@ -15,15 +21,10 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.entity.player.ItemFishedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Mod("fishingreal")
 public class FishingReal {
@@ -37,8 +38,8 @@ public class FishingReal {
 	}
 	
 	@SubscribeEvent
-	public void onServerStarting(FMLServerAboutToStartEvent event) {
-		event.getServer().getResourceManager().addReloadListener(FISHING_MANAGER);
+	public void onServerStarting(AddReloadListenerEvent event) {
+		event.addListener(FISHING_MANAGER);
 	}
 	
 	@SubscribeEvent
@@ -49,7 +50,7 @@ public class FishingReal {
 		for (ItemStack stack : drops) {
 			CompoundNBT nbt = FISHING_MANAGER.matchWithStack(stack);
 			if (nbt != null) {
-				EntityType.func_220335_a(nbt, angler.getEntityWorld(), (entity -> {
+				EntityType.loadEntityAndExecute(nbt, angler.getEntityWorld(), (entity -> {
 					//spawn with velocity to fling towards player
 					World w = angler.getEntityWorld();
 					if (w instanceof ServerWorld) {
