@@ -50,19 +50,19 @@ public class FishingReal {
 		for (ItemStack stack : drops) {
 			CompoundNBT nbt = FISHING_MANAGER.matchWithStack(stack);
 			if (nbt != null) {
-				EntityType.loadEntityAndExecute(nbt, angler.getEntityWorld(), (entity -> {
+				EntityType.func_220335_a(nbt, angler.getEntityWorld(), (entity -> {
 					//spawn with velocity to fling towards player
 					World w = angler.getEntityWorld();
 					if (w instanceof ServerWorld) {
 						ServerWorld world = (ServerWorld) w;
-						entity.setLocationAndAngles(hook.getPosition().getX(), hook.getPosition().getY(), hook.getPosition().getZ(), hook.rotationYaw, hook.rotationPitch);
-						double dX = angler.getPosition().getX() - hook.getPosition().getX();
-						double dY = angler.getPosition().getY() - hook.getPosition().getY();
-						double dZ = angler.getPosition().getZ() - hook.getPosition().getZ();
+						entity.setLocationAndAngles(hook.getPositionVec().getX(), hook.getPositionVec().getY(), hook.getPositionVec().getZ(), hook.rotationYaw, hook.rotationPitch);
+						double dX = angler.getPositionVec().getX() - hook.getPositionVec().getX();
+						double dY = angler.getPositionVec().getY() - hook.getPositionVec().getY();
+						double dZ = angler.getPositionVec().getZ() - hook.getPositionVec().getZ();
 						double mult = 0.12;
 						entity.setMotion(dX * mult, dY * mult + Math.sqrt(Math.sqrt(dX * dX + dY * dY + dZ * dZ)) * 0.14D, dZ * mult);
 						
-						world.addEntity(new ExperienceOrbEntity(angler.world, angler.getPosition().getX(), angler.getPosition().getY() + 0.5D, angler.getPosition().getZ() + 0.5D, angler.world.getRandom().nextInt(6) + 1));
+						world.addEntity(new ExperienceOrbEntity(angler.world, angler.getPositionVec().getX(), angler.getPositionVec().getY() + 0.5D, angler.getPositionVec().getZ() + 0.5D, angler.world.getRandom().nextInt(6) + 1));
 						
 						if (stack.getItem().isIn(ItemTags.FISHES)) {
 							angler.addStat(Stats.FISH_CAUGHT, 1);
@@ -74,7 +74,7 @@ public class FishingReal {
 						
 						if (FISHING_MANAGER.getConversionFromStack(stack).isRandomizeNBT()) {
 							if (entity instanceof MobEntity) {
-								((MobEntity) entity).onInitialSpawn(world, world.getDifficultyForLocation(angler.getPosition()), SpawnReason.NATURAL, null, null);
+								((MobEntity) entity).onInitialSpawn(world, world.getDifficultyForLocation(angler.func_233580_cy_()), SpawnReason.NATURAL, null, null);
 							}
 						}
 						
