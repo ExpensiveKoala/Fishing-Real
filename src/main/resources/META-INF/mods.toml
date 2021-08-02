@@ -20,6 +20,6 @@ A mod which allows you to reel in real fish instead of the fish in item form.
 [[dependencies.fishingreal]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.3]"
+    versionRange="[1.17.1,)"
     ordering="NONE"
     side="BOTH"

@@ -3,23 +3,23 @@ package koala.fishingreal;
 import java.util.Arrays;
 import java.util.List;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.FishingHook;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.item.ExperienceOrbEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.entity.projectile.FishingBobberEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.entity.player.ItemFishedEvent;
@@ -44,42 +44,44 @@ public class FishingReal {
 	
 	@SubscribeEvent
 	public void itemFished(ItemFishedEvent event) {
-		PlayerEntity angler = event.getPlayer();
-		FishingBobberEntity hook = event.getHookEntity();
+		Player angler = event.getPlayer();
+		FishingHook hook = event.getHookEntity();
 		List<ItemStack> drops = event.getDrops();
 		for (ItemStack stack : drops) {
-			CompoundNBT nbt = FISHING_MANAGER.matchWithStack(stack);
+			CompoundTag nbt = FISHING_MANAGER.matchWithStack(stack);
 			if (nbt != null) {
-				EntityType.func_220335_a(nbt, angler.getEntityWorld(), (entity -> {
+				EntityType.loadEntityRecursive(nbt, angler.level, (entity -> {
 					//spawn with velocity to fling towards player
-					World w = angler.getEntityWorld();
-					if (w instanceof ServerWorld) {
-						ServerWorld world = (ServerWorld) w;
-						entity.setLocationAndAngles(hook.getPositionVec().getX(), hook.getPositionVec().getY(), hook.getPositionVec().getZ(), hook.rotationYaw, hook.rotationPitch);
-						double dX = angler.getPositionVec().getX() - hook.getPositionVec().getX();
-						double dY = angler.getPositionVec().getY() - hook.getPositionVec().getY();
-						double dZ = angler.getPositionVec().getZ() - hook.getPositionVec().getZ();
+					Level l = angler.level;
+					if (l instanceof ServerLevel) {
+						ServerLevel level = (ServerLevel) l;
+						entity.moveTo(hook.position().x(), hook.position().y(), hook.position().z(), hook.xRotO, hook.yRotO);
+						double dX = angler.position().x() - hook.position().x();
+						double dY = angler.position().y() - hook.position().y();
+						double dZ = angler.position().z() - hook.position().z();
 						double mult = 0.12;
-						entity.setMotion(dX * mult, dY * mult + Math.sqrt(Math.sqrt(dX * dX + dY * dY + dZ * dZ)) * 0.14D, dZ * mult);
+						entity.setDeltaMovement(dX * mult, dY * mult + Math.sqrt(Math.sqrt(dX * dX + dY * dY + dZ * dZ)) * 0.14D, dZ * mult);
 						
-						world.addEntity(new ExperienceOrbEntity(angler.world, angler.getPositionVec().getX(), angler.getPositionVec().getY() + 0.5D, angler.getPositionVec().getZ() + 0.5D, angler.world.getRandom().nextInt(6) + 1));
+						level.addFreshEntity(new ExperienceOrb(angler.level, angler.position().x(), angler.position().y() + 0.5D, angler.position().z() + 0.5D, angler.level.getRandom().nextInt(6) + 1));
 						
-						if (stack.getItem().isIn(ItemTags.FISHES)) {
-							angler.addStat(Stats.FISH_CAUGHT, 1);
+						if (stack.is(ItemTags.FISHES)) {
+							angler.awardStat(Stats.FISH_CAUGHT, 1);
 						}
 						
-						if (angler instanceof ServerPlayerEntity) {
-							CriteriaTriggers.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity) angler, angler.getActiveItemStack(), hook, Arrays.asList(stack));
+						if (angler instanceof ServerPlayer) {
+							CriteriaTriggers.FISHING_ROD_HOOKED.trigger((ServerPlayer) angler, angler.getUseItem(), hook, Arrays.asList(stack));
 						}
 						
 						if (FISHING_MANAGER.getConversionFromStack(stack).isRandomizeNBT()) {
-							if (entity instanceof MobEntity) {
-								((MobEntity) entity).onInitialSpawn(world, world.getDifficultyForLocation(angler.func_233580_cy_()), SpawnReason.NATURAL, null, null);
+							if (entity instanceof Mob) {
+								((Mob) entity).finalizeSpawn(level, level.getCurrentDifficultyAt(angler.blockPosition()), MobSpawnType.NATURAL, null, null);
 							}
 						}
 						
-						return !world.summonEntity(entity) ? null : entity;
-					} else return null;
+						return !level.addFreshEntity(entity) ? null : entity;
+					} else {
+						return null;
+					}
 					
 				}));
 				if (!angler.isCreative()) {

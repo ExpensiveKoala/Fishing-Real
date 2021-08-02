@@ -2,18 +2,18 @@ package koala.fishingreal;
 
 import com.google.gson.*;
 import koala.fishingreal.util.JsonUtils;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 
 import java.lang.reflect.Type;
 
 public class FishingConversion {
 	
 	protected ItemStack stack;
-	protected CompoundNBT target;
+	protected CompoundTag target;
 	protected boolean randomizeNBT;
 	
-	public FishingConversion(ItemStack stack, CompoundNBT target, boolean randomizeNBT) {
+	public FishingConversion(ItemStack stack, CompoundTag target, boolean randomizeNBT) {
 		this.stack = stack;
 		this.target = target;
 		this.randomizeNBT = randomizeNBT;
@@ -32,7 +32,7 @@ public class FishingConversion {
 		return stack;
 	}
 	
-	public CompoundNBT getTarget() {
+	public CompoundTag getTarget() {
 		return target;
 	}
 	
@@ -48,11 +48,11 @@ public class FishingConversion {
 			ItemStack stack = JsonUtils.deserializeItemStack(obj.get("input").getAsJsonObject());
 			JsonObject result = obj.get("result").getAsJsonObject();
 			String id = result.get("id").getAsString();
-			CompoundNBT nbt = null;
+			CompoundTag nbt = null;
 			if(result.has("nbt")) {
 				nbt = JsonUtils.deserializeCompoundNBT(result.get("nbt").getAsJsonObject());
 			}
-			CompoundNBT target = new CompoundNBT();
+			CompoundTag target = new CompoundTag();
 			target.putString("id", id);
 			if(nbt != null) {
 				target.merge(nbt);

@@ -6,12 +6,12 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import koala.fishingreal.util.StackUtils;
-import net.minecraft.client.resources.JsonReloadListener;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,12 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class FishingManager extends JsonReloadListener {
+public class FishingManager extends SimpleJsonResourceReloadListener {
 	private static final Gson GSON_INSTANCE = (new GsonBuilder()).registerTypeAdapter(FishingConversion.class, new FishingConversion.Serializer()).create();
 	private static final Logger LOGGER = LogManager.getLogger();
 	private List<FishingConversion> conversions = ImmutableList.of();
 	
 	public FishingManager() {super(GSON_INSTANCE,"fishing");}
+	
 	
 	public List<FishingConversion> getConversions() {
 		return conversions;
@@ -39,7 +40,7 @@ public class FishingManager extends JsonReloadListener {
 		return null;
 	}
 	
-	public CompoundNBT matchWithStack(ItemStack stack) {
+	public CompoundTag matchWithStack(ItemStack stack) {
 		FishingConversion conv = getConversionFromStack(stack);
 		if(conv != null) {
 			return conv.target;
@@ -47,11 +48,11 @@ public class FishingManager extends JsonReloadListener {
 		return null;
 	}
 	
-
+	
 	@Override
-	protected void apply(Map<ResourceLocation, JsonElement> objectIn, IResourceManager resourceManagerIn, IProfiler profilerIn) {
+	protected void apply(Map<ResourceLocation, JsonElement> map, ResourceManager resourceManager, ProfilerFiller profiler) {
 		List<FishingConversion> output = new ArrayList<>();
-		for (Map.Entry<ResourceLocation, JsonElement> entry : objectIn.entrySet()) {
+		for (Map.Entry<ResourceLocation, JsonElement> entry : map.entrySet()) {
 			ResourceLocation resourcelocation = entry.getKey();
 			if (resourcelocation.getPath().startsWith("_")) continue;
 			

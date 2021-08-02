@@ -1,6 +1,7 @@
 package koala.fishingreal.util;
 
-import net.minecraft.item.ItemStack;
+
+import net.minecraft.world.item.ItemStack;
 
 public class StackUtils {
 	public static boolean doItemStacksMatchIgnoreNBT(ItemStack stack1, ItemStack stack2) {

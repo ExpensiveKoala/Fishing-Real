@@ -4,11 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import koala.fishingreal.FishingReal;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagParser;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class JsonUtils {
@@ -28,16 +28,16 @@ public class JsonUtils {
 		return object;
 	}
 	
-	public static CompoundNBT deserializeCompoundNBT(JsonObject object) {
+	public static CompoundTag deserializeCompoundNBT(JsonObject object) {
 		try {
-			return JsonToNBT.getTagFromJson(object.toString());
+			return TagParser.parseTag(object.toString());
 		} catch (CommandSyntaxException e) {
 			FishingReal.LOGGER.error("Parsing error loading json as NBT {}", object.toString());
 		}
-		return new CompoundNBT();
+		return new CompoundTag();
 	}
 	
-	public static JsonObject serializeCompoundNBT(CompoundNBT nbt) {
+	public static JsonObject serializeCompoundNBT(CompoundTag nbt) {
 		nbt = nbt.copy();
 		JsonObject object = new JsonObject();
 		object.addProperty("id", nbt.getString("id"));
