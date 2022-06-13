@@ -21,7 +21,7 @@ public class JsonUtils {
 	
 	public static JsonObject serializeItemStack(ItemStack stack) {
 		JsonObject object = new JsonObject();
-		object.addProperty("item", stack.getItem().getRegistryName().toString());
+		object.addProperty("item", stack.getItem().toString());
 		if(stack.getCount() > 1) {
 			object.addProperty("count", stack.getCount());
 		}
