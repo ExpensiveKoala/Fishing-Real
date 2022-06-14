@@ -1,71 +1,35 @@
 package koala.fishingreal;
 
-import com.google.gson.*;
-import koala.fishingreal.util.JsonUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 
-import java.lang.reflect.Type;
+import java.util.Optional;
 
-public class FishingConversion {
-	
-	protected ItemStack stack;
-	protected CompoundTag target;
-	protected boolean randomizeNBT;
-	
-	public FishingConversion(ItemStack stack, CompoundTag target, boolean randomizeNBT) {
-		this.stack = stack;
-		this.target = target;
-		this.randomizeNBT = randomizeNBT;
-	}
-	
-	@Override
-	public String toString() {
-		return "FishingConversion{" +
-		  "stack=" + stack +
-		  ", target=" + target +
-		  ", randomizeNBT=" + randomizeNBT +
-		  '}';
-	}
-	
-	public ItemStack getStack() {
-		return stack;
-	}
-	
-	public CompoundTag getTarget() {
-		return target;
-	}
-	
-	public boolean isRandomizeNBT() {
-		return randomizeNBT;
-	}
-	
-	public static class Serializer implements JsonDeserializer<FishingConversion>, JsonSerializer<FishingConversion> {
-		
-		@Override
-		public FishingConversion deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-			JsonObject obj = json.getAsJsonObject();
-			ItemStack stack = JsonUtils.deserializeItemStack(obj.get("input").getAsJsonObject());
-			JsonObject result = obj.get("result").getAsJsonObject();
-			String id = result.get("id").getAsString();
-			CompoundTag nbt = null;
-			if(result.has("nbt")) {
-				nbt = JsonUtils.deserializeCompoundNBT(result.get("nbt").getAsJsonObject());
-			}
-			CompoundTag target = new CompoundTag();
-			target.putString("id", id);
-			if(nbt != null) {
-				target.merge(nbt);
-			}
-			return new FishingConversion(stack, target, nbt == null);
-		}
-		
-		@Override
-		public JsonElement serialize(FishingConversion src, Type typeOfSrc, JsonSerializationContext context) {
-			JsonObject obj = new JsonObject();
-			obj.add("input", JsonUtils.serializeItemStack(src.stack));
-			obj.add("result", JsonUtils.serializeCompoundNBT(src.target));
-			return obj;
+public record FishingConversion(ItemStack stack, FishingResult result) {
+
+	public static final Codec<ItemStack> ITEM_STACK_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+			Registry.ITEM.byNameCodec().fieldOf("item").forGetter(ItemStack::getItem),
+			Codec.intRange(1, 64).fieldOf("count").orElse(1).forGetter(ItemStack::getCount)
+	).apply(instance, ItemStack::new));
+
+	public static final Codec<FishingConversion> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		ITEM_STACK_CODEC.fieldOf("input").forGetter(FishingConversion::stack),
+		FishingResult.CODEC.fieldOf("result").forGetter(FishingConversion::result)
+	).apply(instance, FishingConversion::new));
+
+	public record FishingResult(EntityType<?> entity, Optional<CompoundTag> tag) {
+
+		public static final Codec<FishingResult> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+				Registry.ENTITY_TYPE.byNameCodec().fieldOf("id").forGetter(FishingResult::entity),
+				CompoundTag.CODEC.optionalFieldOf("nbt").forGetter(FishingResult::tag)
+		).apply(instance, FishingResult::new));
+
+		public boolean randomizeNbt() {
+			return tag.isEmpty();
 		}
 	}
 	
