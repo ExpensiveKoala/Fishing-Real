@@ -36,7 +36,7 @@ public class FishingReal {
 	
 	@SubscribeEvent
 	public void itemFished(ItemFishedEvent event) {
-		Player angler = event.getPlayer();
+		Player angler = event.getEntity();
 		FishingHook hook = event.getHookEntity();
 		List<ItemStack> drops = event.getDrops();
 		for (ItemStack stack : drops) {
