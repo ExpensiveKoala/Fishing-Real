@@ -40,8 +40,9 @@ public class FishingReal {
 		FishingHook hook = event.getHookEntity();
 		List<ItemStack> drops = event.getDrops();
 		for (ItemStack stack : drops) {
-			FishingConversion.FishingResult result = FISHING_MANAGER.getConversionFromStack(stack).result();
-			if (result.entity() != null) {
+			FishingConversion conversion = FISHING_MANAGER.getConversionFromStack(stack);
+			if (conversion != null && conversion.result().entity() != null) {
+				FishingConversion.FishingResult result = conversion.result();
 				Entity entity = result.entity().create(angler.level);
 				if (entity != null) {
 					result.tag().ifPresent(entity::load);

@@ -4,7 +4,7 @@ plugins {
     id 'net.minecraftforge.gradle' version '5.1.+'
 }
 
-version = '1.19-1.4'
+version = '1.19-1.5'
 group = 'koala.fishingreal' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'fishingreal'
 
