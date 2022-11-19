@@ -14,12 +14,6 @@ configurations {
     developmentForge.extendsFrom common
 }
 
-loom {
-    forge {
-        mixinConfig "fishingreal-common.mixins.json"
-    }
-}
-
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
 
