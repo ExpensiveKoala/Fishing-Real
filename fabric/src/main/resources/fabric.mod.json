@@ -6,7 +6,7 @@
   "name": "Fishingreal",
   "description": "A mod which allows you to reel in real fish instead of the fish in item form.",
   "authors": [
-    "ExpensiveKoala"
+    "ExpensiveKoala", "ThatGravyBoat", "AlexNijjar"
   ],
   "contact": {
     "website": "https://www.curseforge.com/minecraft/mc-mods/fishing-real",
@@ -14,7 +14,7 @@
     "issues": "https://github.com/ExpensiveKoala/Fishing-Real/issues"
   },
 
-  "license": "All-Rights-Reserved",
+  "license": "MIT",
   "icon": "icon.png",
 
   "environment": "*",
