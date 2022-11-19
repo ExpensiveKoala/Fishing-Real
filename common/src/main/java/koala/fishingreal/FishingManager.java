@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.JsonOps;
-import koala.fishingreal.util.StackUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -23,15 +22,14 @@ public class FishingManager extends SimpleJsonResourceReloadListener {
 	private static final Gson GSON = new Gson();
 	private static final Logger LOGGER = LogManager.getLogger();
 	private List<FishingConversion> conversions = ImmutableList.of();
-	
+
 	public FishingManager() {
 		super(GSON,"fishing");
 	}
-
 	
 	public FishingConversion getConversionFromStack(ItemStack stack) {
 		for(FishingConversion conv : conversions) {
-			if(StackUtils.doItemStacksMatchIgnoreNBT(stack, conv.stack())) {
+			if(FishingReal.doItemStacksMatchIgnoreNBT(stack, conv.stack())) {
 				return conv;
 			}
 		}
@@ -49,7 +47,7 @@ public class FishingManager extends SimpleJsonResourceReloadListener {
 				FishingConversion.CODEC.parse(JsonOps.INSTANCE, entry.getValue())
 					.result()
 					.ifPresent(conversion -> {
-						output.removeIf(conv -> StackUtils.doItemStacksMatchIgnoreNBT(conversion.stack(), conv.stack()));
+						output.removeIf(conv -> FishingReal.doItemStacksMatchIgnoreNBT(conversion.stack(), conv.stack()));
 						output.add(conversion);
 					});
 			} catch (IllegalArgumentException | JsonParseException jsonparseexception) {
