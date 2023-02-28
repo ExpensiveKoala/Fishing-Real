@@ -1,6 +1,9 @@
 plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
     id "dev.architectury.loom" version "1.0-SNAPSHOT" apply false
+
+    id "com.modrinth.minotaur" version "2.7+"
+    id "com.matthewprenger.cursegradle" version "1.4.0"
 }
 
 architectury {
@@ -9,6 +12,8 @@ architectury {
 
 subprojects {
     apply plugin: "dev.architectury.loom"
+    apply plugin: "com.modrinth.minotaur"
+    apply plugin: "com.matthewprenger.cursegradle"
 
     loom {
         silentMojangMappingsLicense()
@@ -19,6 +24,38 @@ subprojects {
         mappings loom.layered() {
             officialMojangMappings()
             parchment("org.parchmentmc.data:parchment-$rootProject.minecraft_version:$rootProject.parchment_version@zip")
+        }
+    }
+
+
+    var env = System.getenv()
+    var modLoader = name
+
+    var changelogFile = rootProject.file("changelog.md")
+    var changelogText = changelogFile.exists() ? changelogFile.text : ""
+
+    if (env.MODRINTH_TOKEN) {
+        modrinth {
+            projectId = env.MODRINTH_PROJECT
+            token = env.MODRINTH_TOKEN
+            uploadFile = tasks.remapJar
+            gameVersions = [minecraft_version]
+            loaders = [modLoader]
+            changelog = changelogText
+        }
+    }
+
+    if (env.CURSE_TOKEN) {
+        curseforge {
+            apiKey = env.CURSE_TOKEN
+            project {
+                id = env.CURSE_PROJECT
+                changelog = changelogText
+                releaseType = "release"
+                addGameVersion minecraft_version
+                addGameVersion modLoader.capitalize()
+                mainArtifact(tasks.remapJar)
+            }
         }
     }
 }
