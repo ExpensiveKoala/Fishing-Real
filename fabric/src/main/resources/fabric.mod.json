@@ -24,7 +24,7 @@
     ]
   },
   "mixins": [
-    "fishingreal.mixins.json"
+    "fishingreal-common.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.14.10",

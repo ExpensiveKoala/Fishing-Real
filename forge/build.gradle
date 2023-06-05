@@ -58,6 +58,12 @@ components.java {
     }
 }
 
+loom {
+    forge {
+        mixinConfig "fishingreal-common.mixins.json"
+    }
+}
+
 publishing {
     publications {
         mavenForge(MavenPublication) {
