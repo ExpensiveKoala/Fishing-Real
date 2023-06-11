@@ -15,6 +15,6 @@ public abstract class FishingHookMixin {
     @Shadow @Nullable public abstract Player getPlayerOwner();
     @ModifyArg(method = "retrieve", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z"))
     public Entity replaceHookedItems(Entity original) {
-        return FishingReal.swapItemEntity(original, getPlayerOwner());
+        return FishingReal.convertItemEntity(original, getPlayerOwner());
     }
 }
