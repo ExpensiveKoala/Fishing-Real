@@ -28,6 +28,10 @@ public class FishingReal {
         return stack1.is(stack2.getItem()) && stack1.getCount() == stack2.getCount();
     }
 
+    public static void onRegisterReloadListeners(BiConsumer<ResourceLocation, PreparableReloadListener> registry) {
+        registry.accept(new ResourceLocation(MOD_ID, "fishing"), FISHING_MANAGER);
+    }
+
     public static Entity convertItemStack(ItemStack itemstack, Player player) {
         if (player != null && player.level instanceof ServerLevel serverLevel) {
             FishingConversion.FishingResult result = FishingReal.FISHING_MANAGER.getConversionResultFromStack(itemstack);
@@ -72,9 +76,5 @@ public class FishingReal {
         if (player instanceof ServerPlayer serverPlayer) {
             CriteriaTriggers.FISHING_ROD_HOOKED.trigger(serverPlayer, player.getUseItem(), hook, List.of(stack));
         }
-    }
-
-    public static void onRegisterReloadListeners(BiConsumer<ResourceLocation, PreparableReloadListener> registry) {
-        registry.accept(new ResourceLocation(MOD_ID, "fishing"), FISHING_MANAGER);
     }
 }

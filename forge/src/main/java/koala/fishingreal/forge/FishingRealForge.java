@@ -3,6 +3,7 @@ package koala.fishingreal.forge;
 import koala.fishingreal.FishingReal;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.FishingHook;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.entity.player.ItemFishedEvent;
@@ -27,7 +28,7 @@ public class FishingRealForge {
 
         // Skip running when we know the mixin works. Still safe otherwise, just improves compat for other mixins.
         if (!useMixinInstead) {
-            event.getDrops().forEach(itemStack -> {
+            for (ItemStack itemStack : event.getDrops()) {
                 Entity convertedEntity = FishingReal.convertItemStack(itemStack, event.getEntity());
                 if (convertedEntity != null) {
                     FishingReal.fishUpEntity(convertedEntity, event.getHookEntity(), itemStack, event.getEntity());
@@ -36,7 +37,7 @@ public class FishingRealForge {
                     }
                     event.setCanceled(true);
                 }
-            });
+            }
         }
     }
 }
