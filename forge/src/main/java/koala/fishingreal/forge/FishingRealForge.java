@@ -55,11 +55,13 @@ public class FishingRealForge {
         for (ItemStack itemStack : event.getDrops()) {
             Entity convertedEntity = FishingReal.convertItemStack(itemStack, event.getEntity());
             if (convertedEntity != null) {
-                fishUpEntity(convertedEntity, event.getHookEntity(), itemStack, event.getEntity());
+                for (int i = 0; i < itemStack.getCount(); i++) {
+                    fishUpEntity(convertedEntity, event.getHookEntity(), itemStack, event.getEntity());
+                }
                 if (!event.getEntity().isCreative()) {
                     event.damageRodBy(1);
                 }
-                if(ModList.get().isLoaded("aquaculture")) {
+                if (ModList.get().isLoaded("aquaculture")) {
                     AquacultureCompat.onItemFished(event);
                 }
                 event.setCanceled(true);
