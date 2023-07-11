@@ -41,8 +41,8 @@ public class FishingRealForge {
         double m = 0.12;
         entity.setPos(hook.getX(), hook.getY(), hook.getZ());
         entity.setDeltaMovement(dX * m, dY * m + Math.sqrt(Math.sqrt(dX * dX + dY * dY + dZ * dZ)) * 0.08, dZ * m);
-        player.level.addFreshEntity(entity);
-        player.level.addFreshEntity(new ExperienceOrb(player.level, player.getX(), player.getY() + 0.5, player.getZ() + 0.5, player.level.random.nextInt(6) + 1));
+        player.level().addFreshEntity(entity);
+        player.level().addFreshEntity(new ExperienceOrb(player.level(), player.getX(), player.getY() + 0.5, player.getZ() + 0.5, player.level().random.nextInt(6) + 1));
         if (stack.is(ItemTags.FISHES)) {
             player.awardStat(Stats.FISH_CAUGHT, 1);
         }

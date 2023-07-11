@@ -23,8 +23,10 @@ loom {
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
 
-    modCompileOnly("com.teammetallurgy.aquaculture:aquaculture2_${rootProject.minecraft_version}:${rootProject.minecraft_version}-${rootProject.aquaculture_version}") { transitive false }
-    modLocalRuntime("com.teammetallurgy.aquaculture:aquaculture2_${rootProject.minecraft_version}:${rootProject.minecraft_version}-${rootProject.aquaculture_version}") { transitive false }
+    //modCompileOnly("com.teammetallurgy.aquaculture:aquaculture2_${rootProject.minecraft_version}:${rootProject.minecraft_version}-${rootProject.aquaculture_version}") { transitive false }
+    //modLocalRuntime("com.teammetallurgy.aquaculture:aquaculture2_${rootProject.minecraft_version}:${rootProject.minecraft_version}-${rootProject.aquaculture_version}") { transitive false }
+    modCompileOnly("curse.maven:aquaculture-60028:4608454") // https://www.curseforge.com/minecraft/mc-mods/aquaculture/files/4608454
+    modLocalRuntime("curse.maven:aquaculture-60028:4608454")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }

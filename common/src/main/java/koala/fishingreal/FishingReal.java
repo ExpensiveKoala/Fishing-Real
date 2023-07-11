@@ -33,10 +33,10 @@ public class FishingReal {
     }
 
     public static Entity convertItemStack(ItemStack itemstack, Player player) {
-        if (player != null && player.level instanceof ServerLevel serverLevel) {
+        if (player != null && player.level() instanceof ServerLevel serverLevel) {
             FishingConversion.FishingResult result = FishingReal.FISHING_MANAGER.getConversionResultFromStack(itemstack);
             if(result != null) {
-                Entity resultEntity = result.entity().create(player.level);
+                Entity resultEntity = result.entity().create(player.level());
                 result.tag().ifPresent(resultEntity::load);
                 if (result.randomizeNbt() && resultEntity instanceof Mob resultMob) {
                     resultMob.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(player.blockPosition()), MobSpawnType.NATURAL, null, null);

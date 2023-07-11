@@ -15,7 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
-import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -33,13 +33,13 @@ public class AquacultureCompat {
             AquaFishingBobberEntity hook = (AquaFishingBobberEntity) event.getHookEntity();
             // Handle double hook
             if (hook.hasHook() && hook.getHook().getDoubleCatchChance() > 0) {
-                if (hook.getLevel().random.nextDouble() <= hook.getHook().getDoubleCatchChance()) {
-                    LootContext lootParams = new LootContext.Builder((ServerLevel) hook.getLevel()).withParameter(LootContextParams.ORIGIN, hook.position()).withParameter(LootContextParams.TOOL, event.getEntity().getUseItem()).withParameter(LootContextParams.THIS_ENTITY, hook).withParameter(LootContextParams.KILLER_ENTITY, event.getEntity()).withParameter(LootContextParams.THIS_ENTITY, hook).withLuck((float)((AquaFishingBobberEntityAccessor)hook).getLuck() + event.getEntity().getLuck()).create(LootContextParamSets.FISHING);
-                    List<ItemStack> doubleLoot = getLoot(hook, lootParams, (ServerLevel) hook.getLevel());
+                if (hook.level().random.nextDouble() <= hook.getHook().getDoubleCatchChance()) {
+                    LootParams lootParams = new LootParams.Builder((ServerLevel) hook.level()).withParameter(LootContextParams.ORIGIN, hook.position()).withParameter(LootContextParams.TOOL, event.getEntity().getUseItem()).withParameter(LootContextParams.THIS_ENTITY, hook).withParameter(LootContextParams.KILLER_ENTITY, event.getEntity()).withParameter(LootContextParams.THIS_ENTITY, hook).withLuck((float)((AquaFishingBobberEntityAccessor)hook).getLuck() + event.getEntity().getLuck()).create(LootContextParamSets.FISHING);
+                    List<ItemStack> doubleLoot = getLoot(hook, lootParams, (ServerLevel) hook.level());
                     if (!doubleLoot.isEmpty()) {
                         for (ItemStack stack : doubleLoot) {
                             Entity convertedEntity = FishingReal.convertItemStack(stack, event.getEntity());
-                            FishingRealForge.fishUpEntity(convertedEntity == null ? new ItemEntity(hook.getLevel(), hook.getX(), hook.getY(), hook.getZ(), stack) {
+                            FishingRealForge.fishUpEntity(convertedEntity == null ? new ItemEntity(hook.level(), hook.getX(), hook.getY(), hook.getZ(), stack) {
                                 @Override
                                 public boolean displayFireAnimation() {
                                     return false;
@@ -51,8 +51,8 @@ public class AquacultureCompat {
                                 
                                 @Override
                                 public boolean isInvulnerableTo(@Nonnull DamageSource source) {
-                                    BlockPos spawnPos = new BlockPos(hook.getX(), hook.getY(), hook.getZ());
-                                    return hook.isLavaHookInLava(hook, level, spawnPos) || super.isInvulnerableTo(source);
+                                    BlockPos spawnPos = BlockPos.containing(hook.getX(), hook.getY(), hook.getZ());
+                                    return hook.isLavaHookInLava(hook, level(), spawnPos) || super.isInvulnerableTo(source);
                                 }
                             } : convertedEntity, hook, stack, event.getEntity());
                         }
@@ -65,7 +65,7 @@ public class AquacultureCompat {
                 ItemStackHandler rodHandler = AquaFishingRodItem.getHandler(((AquaFishingBobberEntityAccessor)hook).getFishingRod());
                 ItemStack bait = rodHandler.getStackInSlot(1);
                 if (!bait.isEmpty()) {
-                    if (bait.hurt(1, hook.getLevel().random, null)) {
+                    if (bait.hurt(1, hook.level().random, null)) {
                         bait.shrink(1);
                         hook.playSound(AquaSounds.BOBBER_BAIT_BREAK.get(), 0.7F, 0.2F);
                     }
@@ -75,7 +75,7 @@ public class AquacultureCompat {
         }
     }
     
-    private static List<ItemStack> getLoot(AquaFishingBobberEntity hook, LootContext lootParams, ServerLevel level) {
+    private static List<ItemStack> getLoot(AquaFishingBobberEntity hook, LootParams lootParams, ServerLevel level) {
         ResourceLocation lootTableLocation;
         if (hook.isLavaHookInLava(hook, level, hook.blockPosition())) {
             if (level.getLevel().dimensionType().hasCeiling()) {
@@ -86,7 +86,7 @@ public class AquacultureCompat {
         } else {
             lootTableLocation = BuiltInLootTables.FISHING;
         }
-        LootTable lootTable = level.getServer().getLootTables().get(lootTableLocation);
+        LootTable lootTable = level.getServer().getLootData().getLootTable(lootTableLocation);
         return lootTable.getRandomItems(lootParams);
     }
 }

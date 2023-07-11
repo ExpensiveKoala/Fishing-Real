@@ -72,6 +72,12 @@ allprojects {
     repositories {
         maven { url "https://nexus.resourcefulbees.com/repository/maven-public/" }
         maven { url "https://girafi.dk/maven/" } //Aquaculture
+        maven {
+            url "https://cursemaven.com"
+            content {
+                includeGroup "curse.maven"
+            }
+        }
     }
 
     tasks.withType(JavaCompile) {
