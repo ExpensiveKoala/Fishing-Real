@@ -8,9 +8,9 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(AquaFishingBobberEntity.class)
 public interface AquaFishingBobberEntityAccessor {
 
-    @Accessor
+    @Accessor(remap = false)
     int getLuck();
     
-    @Accessor
+    @Accessor(remap = false)
     ItemStack getFishingRod();
 }
