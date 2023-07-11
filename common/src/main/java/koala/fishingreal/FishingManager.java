@@ -27,10 +27,10 @@ public class FishingManager extends SimpleJsonResourceReloadListener {
 		super(GSON,"fishing");
 	}
 	
-	public FishingConversion getConversionFromStack(ItemStack stack) {
+	public FishingConversion.FishingResult getConversionResultFromStack(ItemStack stack) {
 		for(FishingConversion conv : conversions) {
-			if(FishingReal.doItemStacksMatchIgnoreNBT(stack, conv.stack())) {
-				return conv;
+			if(FishingReal.doItemStacksMatchIgnoreNBT(stack, conv.stack()) && conv.result() != null) {
+				return conv.result();
 			}
 		}
 		return null;

@@ -15,7 +15,6 @@ import java.util.concurrent.Executor;
 public class FishingRealFabric implements ModInitializer {
     @Override
     public void onInitialize() {
-        FishingReal.init();
         FishingReal.onRegisterReloadListeners((id, listener) -> ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new IdentifiableResourceReloadListener() {
             @Override
             public ResourceLocation getFabricId() {
