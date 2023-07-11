@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "koala.fishingreal.forge.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "compat.AquaFishingBobberEntityAccessor"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

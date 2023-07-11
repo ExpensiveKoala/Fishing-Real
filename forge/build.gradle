@@ -14,8 +14,17 @@ configurations {
     developmentForge.extendsFrom common
 }
 
+loom {
+    forge {
+        mixinConfig "fishingreal.mixins.json"
+    }
+}
+
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
+
+    modCompileOnly("com.teammetallurgy.aquaculture:aquaculture2_${rootProject.minecraft_version}:${rootProject.minecraft_version}-${rootProject.aquaculture_version}") { transitive false }
+    modLocalRuntime("com.teammetallurgy.aquaculture:aquaculture2_${rootProject.minecraft_version}:${rootProject.minecraft_version}-${rootProject.aquaculture_version}") { transitive false }
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }

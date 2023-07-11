@@ -1,1 +1,2 @@
-Ported to multi-loader
+- Redid the way Fabric fish conversion is handled to add more support for custom fishing loot tables. I.E. Mods like Sandwichable
+- Added Aquaculture 2 rod support. Double hook can actually hook two fish, and bait is properly consumed!
