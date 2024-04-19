@@ -38,7 +38,7 @@ public class AquacultureCompat {
                     List<ItemStack> doubleLoot = getLoot(hook, lootParams, (ServerLevel) hook.level());
                     if (!doubleLoot.isEmpty()) {
                         for (ItemStack stack : doubleLoot) {
-                            Entity convertedEntity = FishingReal.convertItemStack(stack, event.getEntity());
+                            Entity convertedEntity = FishingReal.convertItemStack(stack, event.getEntity(), hook.position());
                             FishingRealForge.fishUpEntity(convertedEntity == null ? new ItemEntity(hook.level(), hook.getX(), hook.getY(), hook.getZ(), stack) {
                                 @Override
                                 public boolean displayFireAnimation() {

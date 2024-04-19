@@ -53,7 +53,7 @@ public class FishingRealForge {
 
     public static void onItemFished(ItemFishedEvent event) {
         for (ItemStack itemStack : event.getDrops()) {
-            Entity convertedEntity = FishingReal.convertItemStack(itemStack, event.getEntity());
+            Entity convertedEntity = FishingReal.convertItemStack(itemStack, event.getEntity(), event.getHookEntity().position());
             if (convertedEntity != null) {
                 for (int i = 0; i < itemStack.getCount(); i++) {
                     fishUpEntity(convertedEntity, event.getHookEntity(), itemStack, event.getEntity());
