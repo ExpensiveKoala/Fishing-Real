@@ -11,20 +11,20 @@ import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.event.entity.player.ItemFishedEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.entity.player.ItemFishedEvent;
 
 import java.util.List;
 
 @Mod(FishingReal.MOD_ID)
 public class FishingRealForge {
     public FishingRealForge() {
-        MinecraftForge.EVENT_BUS.addListener(FishingRealForge::onServerReloadListeners);
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOW, FishingRealForge::onItemFished);
+        NeoForge.EVENT_BUS.addListener(FishingRealForge::onServerReloadListeners);
+        NeoForge.EVENT_BUS.addListener(EventPriority.LOW, FishingRealForge::onItemFished);
     }
 
     public static void onServerReloadListeners(AddReloadListenerEvent event) {

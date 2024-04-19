@@ -1,6 +1,5 @@
-
 modLoader="javafml"
-loaderVersion="[47,)"
+loaderVersion="[2,)"
 license="MIT"
 issueTrackerURL="https://github.com/ExpensiveKoala/Fishing-Real/issues"
 [[mods]]
@@ -13,23 +12,25 @@ authors="ExpensiveKoala, ThatGravyBoat, AlexNijjar"
 description='''
 A mod which allows you to reel in real fish instead of the fish in item form.
 '''
+[[mixins]]
+config = "fishingreal.mixins.json"
 [[dependencies.fishingreal]]
-   modId="forge"
-   mandatory=true
-   versionRange="[47,)"
+   modId="neoforge"
+   type="required"
+   versionRange="[20.4,)"
    ordering="NONE"
    side="BOTH"
 
 [[dependencies.fishingreal]]
    modId="minecraft"
-   mandatory=true
+   type="required"
    versionRange="[1.20,)"
    ordering="NONE"
    side="BOTH"
 
 [[dependencies.fishingreal]]
    modId="aquaculture"
-   mandatory=false
-   versionRange="[1.20.1-2.5.0,)"
+   type="required"
+   versionRange="[1.20.4-2.6.1,)"
    ordering="NONE"
    side="BOTH"
