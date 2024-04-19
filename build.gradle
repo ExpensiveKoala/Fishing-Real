@@ -53,8 +53,12 @@ subprojects {
                 changelog = changelogText
                 releaseType = "release"
                 addGameVersion minecraft_version
-                addGameVersion modLoader.capitalize()
                 mainArtifact(tasks.remapJar)
+                if (modLoader == "fabric") {
+                    addGameVersion modLoader.capitalize()
+                } else {
+                    addGameVersion "NeoForge"
+                }
             }
         }
     }
