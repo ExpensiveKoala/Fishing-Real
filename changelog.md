@@ -1,3 +1,7 @@
+## 1.8.0
+- Update to 1.20.4
+- Drop Forge in favor of NeoForge
+
 ## 1.7.2
 - Set position of fish before running nbt randomizing. This will fix certain mod entities who determine variant based on position.
 
