@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id 'com.github.johnrengelman.shadow'
 }
 architectury {
     platformSetupLoomIde()
@@ -7,16 +7,19 @@ architectury {
 }
 
 configurations {
-    common
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    common {
+        canBeResolved = true
+        canBeConsumed = false
+    }
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentNeoForge.extendsFrom common
-}
 
-loom {
-    neoForge {
-
+    // Files in this configuration will be bundled into your mod using the Shadow plugin.
+    // Don't use the `shadow` configuration from the plugin itself as it's meant for excluding files.
+    shadowBundle {
+        canBeResolved = true
+        canBeConsumed = false
     }
 }
 
@@ -25,17 +28,17 @@ dependencies {
 
     //modCompileOnly("com.teammetallurgy.aquaculture:aquaculture2_${rootProject.minecraft_version}:${rootProject.minecraft_version}-${rootProject.aquaculture_version}") { transitive false }
     //modLocalRuntime("com.teammetallurgy.aquaculture:aquaculture2_${rootProject.minecraft_version}:${rootProject.minecraft_version}-${rootProject.aquaculture_version}") { transitive false }
-    modCompileOnly("curse.maven:aquaculture-60028:5140622") // https://www.curseforge.com/minecraft/mc-mods/aquaculture/files/5140622
-    modLocalRuntime("curse.maven:aquaculture-60028:5140622")
+    modCompileOnly("curse.maven:aquaculture-60028:5538543") // https://www.curseforge.com/minecraft/mc-mods/aquaculture/files/5140622
+    modLocalRuntime("curse.maven:aquaculture-60028:5538543")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
+    shadowBundle(project(path: ":common", configuration: "transformProductionNeoForge"))
 }
 
 processResources {
     inputs.property "version", project.version
 
-    filesMatching("META-INF/mods.toml") {
+    filesMatching("META-INF/neoforge.mods.toml") {
         expand "version": project.version
     }
 }
@@ -43,7 +46,7 @@ processResources {
 shadowJar {
     exclude "fabric.mod.json"
 
-    configurations = [project.configurations.shadowCommon]
+    configurations = [project.configurations.shadowBundle]
     archiveClassifier.set "dev-shadow"
 }
 

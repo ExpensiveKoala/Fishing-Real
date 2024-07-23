@@ -24,7 +24,7 @@ public class FishingReal {
     }
 
     public static void onRegisterReloadListeners(BiConsumer<ResourceLocation, PreparableReloadListener> registry) {
-        registry.accept(new ResourceLocation(MOD_ID, "fishing"), FISHING_MANAGER);
+        registry.accept(ResourceLocation.fromNamespaceAndPath(MOD_ID, "fishing"), FISHING_MANAGER);
     }
 
     public static Entity convertItemStack(ItemStack itemstack, Player player, Vec3 position) {
@@ -35,7 +35,7 @@ public class FishingReal {
                 result.tag().ifPresent(resultEntity::load);
                 resultEntity.moveTo(position);
                 if (result.randomizeNbt() && resultEntity instanceof Mob resultMob) {
-                    resultMob.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(player.blockPosition()), MobSpawnType.NATURAL, null, null);
+                    resultMob.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(player.blockPosition()), MobSpawnType.NATURAL, null);
                 }
                 return resultEntity;
             }

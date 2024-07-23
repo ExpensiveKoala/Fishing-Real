@@ -8,6 +8,7 @@ import koala.fishingreal.FishingReal;
 import koala.fishingreal.forge.FishingRealForge;
 import koala.fishingreal.forge.mixin.compat.AquaFishingBobberEntityAccessor;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -31,10 +32,13 @@ public class AquacultureCompat {
     public static void onItemFished(ItemFishedEvent event) {
         if (event.getHookEntity() instanceof AquaFishingBobberEntity) {
             AquaFishingBobberEntity hook = (AquaFishingBobberEntity) event.getHookEntity();
+            if(hook.level().isClientSide()) {
+                return;
+            }
             // Handle double hook
             if (hook.hasHook() && hook.getHook().getDoubleCatchChance() > 0) {
                 if (hook.level().random.nextDouble() <= hook.getHook().getDoubleCatchChance()) {
-                    LootParams lootParams = new LootParams.Builder((ServerLevel) hook.level()).withParameter(LootContextParams.ORIGIN, hook.position()).withParameter(LootContextParams.TOOL, event.getEntity().getUseItem()).withParameter(LootContextParams.THIS_ENTITY, hook).withParameter(LootContextParams.KILLER_ENTITY, event.getEntity()).withParameter(LootContextParams.THIS_ENTITY, hook).withLuck((float)((AquaFishingBobberEntityAccessor)hook).getLuck() + event.getEntity().getLuck()).create(LootContextParamSets.FISHING);
+                    LootParams lootParams = new LootParams.Builder((ServerLevel) hook.level()).withParameter(LootContextParams.ORIGIN, hook.position()).withParameter(LootContextParams.TOOL, event.getEntity().getUseItem()).withParameter(LootContextParams.THIS_ENTITY, hook).withParameter(LootContextParams.ATTACKING_ENTITY, event.getEntity()).withParameter(LootContextParams.THIS_ENTITY, hook).withLuck((float)((AquaFishingBobberEntityAccessor)hook).getLuck() + event.getEntity().getLuck()).create(LootContextParamSets.FISHING);
                     List<ItemStack> doubleLoot = getLoot(hook, lootParams, (ServerLevel) hook.level());
                     if (!doubleLoot.isEmpty()) {
                         for (ItemStack stack : doubleLoot) {
@@ -65,10 +69,10 @@ public class AquacultureCompat {
                 ItemStackHandler rodHandler = AquaFishingRodItem.getHandler(((AquaFishingBobberEntityAccessor)hook).getFishingRod());
                 ItemStack bait = rodHandler.getStackInSlot(1);
                 if (!bait.isEmpty()) {
-                    if (bait.hurt(1, hook.level().random, null)) {
+                    bait.hurtAndBreak(1, (ServerLevel) hook.level(), null, item -> {
                         bait.shrink(1);
                         hook.playSound(AquaSounds.BOBBER_BAIT_BREAK.get(), 0.7F, 0.2F);
-                    }
+                    });
                     rodHandler.setStackInSlot(1, bait);
                 }
             }
@@ -76,7 +80,7 @@ public class AquacultureCompat {
     }
     
     private static List<ItemStack> getLoot(AquaFishingBobberEntity hook, LootParams lootParams, ServerLevel level) {
-        ResourceLocation lootTableLocation;
+        ResourceKey<LootTable> lootTableLocation;
         if (hook.isLavaHookInLava(hook, level, hook.blockPosition())) {
             if (level.getLevel().dimensionType().hasCeiling()) {
                 lootTableLocation = AquaLootTables.NETHER_FISHING;
@@ -86,7 +90,7 @@ public class AquacultureCompat {
         } else {
             lootTableLocation = BuiltInLootTables.FISHING;
         }
-        LootTable lootTable = level.getServer().getLootData().getLootTable(lootTableLocation);
+        LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(lootTableLocation);
         return lootTable.getRandomItems(lootParams);
     }
 }
