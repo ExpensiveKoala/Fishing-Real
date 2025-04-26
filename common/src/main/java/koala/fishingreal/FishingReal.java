@@ -47,18 +47,6 @@ public class FishingReal {
         }
         return null;
     }
-
-    public static Entity convertItemEntity(Entity fishedEntity, Player player) {
-        if (player != null && fishedEntity instanceof ItemEntity itemEntity) {
-            Entity resultEntity = convertItemStack(itemEntity.getItem(), player, itemEntity.position());
-            if (resultEntity != null) {
-                resultEntity.moveTo(itemEntity.position());
-                resultEntity.setDeltaMovement(itemEntity.getDeltaMovement().multiply(1.2, 1.2, 1.2));
-                return resultEntity;
-            }
-        }
-        return fishedEntity;
-    }
     
     /**
      * Rip of FishingHook#Retrieve logic for spawning the new entity instead of the original ItemStack
