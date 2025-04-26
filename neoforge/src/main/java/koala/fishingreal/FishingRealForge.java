@@ -1,6 +1,5 @@
 package koala.fishingreal;
 
-import koala.fishingreal.compat.AquacultureCompat;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
@@ -11,7 +10,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
@@ -31,17 +29,19 @@ public class FishingRealForge {
     }
     
     /**
-     * Rip of FishingHook#Retrieve logic for use where direct entity conversion can't occur
+     * Rip of FishingHook#Retrieve logic for spawning the new entity instead of the original ItemStack
      */
     public static void fishUpEntity(Entity entity, FishingHook hook, ItemStack stack, Player player) {
         double dX = player.getX() - hook.getX();
         double dY = player.getY() - hook.getY();
         double dZ = player.getZ() - hook.getZ();
-        double m = 0.12;
+        double strength = 0.12;
+        double verticalStrength = 0.18;
         entity.setPos(hook.getX(), hook.getY(), hook.getZ());
-        entity.setDeltaMovement(dX * m, dY * m + Math.sqrt(Math.sqrt(dX * dX + dY * dY + dZ * dZ)) * 0.08, dZ * m);
+        entity.setDeltaMovement(dX * strength, dY * strength + Math.sqrt(Math.sqrt(dX * dX + dY * dY + dZ * dZ)) * verticalStrength, dZ * strength);
         player.level().addFreshEntity(entity);
-        player.level().addFreshEntity(new ExperienceOrb(player.level(), player.getX(), player.getY() + 0.5, player.getZ() + 0.5, player.level().random.nextInt(6) + 1));
+        
+        // Stack is empty now, so we need to award stats and trigger CriteriaTriggers ourselves
         if (stack.is(ItemTags.FISHES)) {
             player.awardStat(Stats.FISH_CAUGHT, 1);
         }
@@ -57,13 +57,8 @@ public class FishingRealForge {
                 for (int i = 0; i < itemStack.getCount(); i++) {
                     fishUpEntity(convertedEntity, event.getHookEntity(), itemStack, event.getEntity());
                 }
-                if (!event.getEntity().isCreative()) {
-                    event.damageRodBy(1);
-                }
-                if (ModList.get().isLoaded("aquaculture")) {
-                    AquacultureCompat.onItemFished(event);
-                }
-                event.setCanceled(true);
+                // Effectively remove the item from the loot pool
+                itemStack.setCount(0);
             }
         }
     }
