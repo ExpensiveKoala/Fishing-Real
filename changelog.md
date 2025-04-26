@@ -1,5 +1,10 @@
-## 1.10.0
-- Change project layout (Should be no change for end user)
+## 1.9.1
+- Change project layout (Should be no change for end user). Using 1.21.1 now
+- Fix deleting fishing loot when catching multiple items
+- Add config for attempting to interact with fished-up-entity, this means you catch the fish in your bucket if you have it in your offhand. (Requires forge config api port for fabric)
+
+## 1.9.0
+- Port to 1.21
 
 ## 1.8.0
 - Update to 1.20.4

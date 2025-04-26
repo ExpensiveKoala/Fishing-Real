@@ -3,16 +3,20 @@ package koala.fishingreal;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.entity.player.ItemFishedEvent;
 
 @Mod(FishingReal.MOD_ID)
 public class FishingRealForge {
-    public FishingRealForge() {
+    public FishingRealForge(ModContainer modContainer) {
         NeoForge.EVENT_BUS.addListener(FishingRealForge::onServerReloadListeners);
         NeoForge.EVENT_BUS.addListener(EventPriority.LOW, FishingRealForge::onItemFished);
+        
+        modContainer.registerConfig(ModConfig.Type.COMMON, Config.CONFIG_SPEC);
     }
 
     public static void onServerReloadListeners(AddReloadListenerEvent event) {

@@ -1,18 +1,22 @@
 package koala.fishingreal;
 
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
@@ -23,6 +27,9 @@ public class FishingReal {
     public static final FishingManager FISHING_MANAGER = new FishingManager();
 
     public static final String MOD_ID = "fishingreal";
+    
+    private static TagKey<Item> WATER_BUCKET = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "buckets/water"));
+    private static TagKey<Item> FISHING_ROD = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "tools/fishing_rod"));
 
     public static boolean doItemStacksMatchIgnoreNBT(ItemStack stack1, ItemStack stack2) {
         return stack1.is(stack2.getItem()) && stack1.getCount() == stack2.getCount();
@@ -67,6 +74,28 @@ public class FishingReal {
         }
         if (player instanceof ServerPlayer serverPlayer) {
             CriteriaTriggers.FISHING_ROD_HOOKED.trigger(serverPlayer, player.getUseItem(), hook, List.of(stack));
+        }
+        
+        if(Config.CONFIG.enableCatchInteraction.get()) {
+            attemptBucket(entity, player);
+        }
+    }
+    
+    private static void attemptBucket(Entity entity, Player player) {
+        InteractionResult interactionResult = InteractionResult.PASS;
+        
+        boolean restrictToWaterBucket = Config.CONFIG.limitInteractionToWaterBucket.get();
+        boolean isWaterBucketMain = player.getMainHandItem().is(WATER_BUCKET);
+        boolean isWaterBucketOff = player.getOffhandItem().is(WATER_BUCKET);
+        
+        if (!restrictToWaterBucket || isWaterBucketOff) {
+            interactionResult = player.interactOn(entity, InteractionHand.OFF_HAND);
+        }
+        
+        if (!interactionResult.consumesAction()) {
+            if (!restrictToWaterBucket || isWaterBucketMain) {
+                player.interactOn(entity, InteractionHand.MAIN_HAND);
+            }
         }
     }
 }
