@@ -1,7 +1,6 @@
-package koala.fishingreal.forge;
+package koala.fishingreal;
 
-import koala.fishingreal.FishingReal;
-import koala.fishingreal.forge.compat.AquacultureCompat;
+import koala.fishingreal.compat.AquacultureCompat;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;

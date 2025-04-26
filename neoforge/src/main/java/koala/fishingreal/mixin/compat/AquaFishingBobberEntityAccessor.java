@@ -1,4 +1,4 @@
-package koala.fishingreal.forge.mixin.compat;
+package koala.fishingreal.mixin.compat;
 
 import com.teammetallurgy.aquaculture.entity.AquaFishingBobberEntity;
 import net.minecraft.world.item.ItemStack;

@@ -1,3 +1,6 @@
+## 1.10.0
+- Change project layout (Should be no change for end user)
+
 ## 1.8.0
 - Update to 1.20.4
 - Drop Forge in favor of NeoForge

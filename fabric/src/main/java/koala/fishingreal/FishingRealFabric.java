@@ -1,6 +1,5 @@
-package koala.fishingreal.fabric;
+package koala.fishingreal;
 
-import koala.fishingreal.FishingReal;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;

@@ -1,4 +1,4 @@
-package koala.fishingreal.fabric.mixin;
+package koala.fishingreal.mixin;
 
 import koala.fishingreal.FishingReal;
 import net.minecraft.world.entity.Entity;

@@ -1,12 +1,12 @@
-package koala.fishingreal.forge.compat;
+package koala.fishingreal.compat;
 
 import com.teammetallurgy.aquaculture.entity.AquaFishingBobberEntity;
 import com.teammetallurgy.aquaculture.init.AquaLootTables;
 import com.teammetallurgy.aquaculture.init.AquaSounds;
 import com.teammetallurgy.aquaculture.item.AquaFishingRodItem;
 import koala.fishingreal.FishingReal;
-import koala.fishingreal.forge.FishingRealForge;
-import koala.fishingreal.forge.mixin.compat.AquaFishingBobberEntityAccessor;
+import koala.fishingreal.FishingRealForge;
+import koala.fishingreal.mixin.compat.AquaFishingBobberEntityAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;

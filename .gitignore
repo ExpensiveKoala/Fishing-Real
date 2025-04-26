@@ -1,33 +1,24 @@
-# Gradle
-.gradle/
-build/
-out/
-classes/
-
-# Loom
-run/
-src/main/generated
-
-# Eclipse
+# eclipse
+bin
 *.launch
-
-# IntelliJ Idea
-.idea/
-*.iml
-*.ipr
-*.iws
-
-# Visual Studio Code
-.settings/
-.vscode/
-bin/
+.settings
+.metadata
 .classpath
 .project
 
-# macOS
-*.DS_Store
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea/*
+!.idea/scopes
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+# gradle
+build
+.gradle
 
-.architectury-transformer/
+# other
+eclipse
+run
+runs

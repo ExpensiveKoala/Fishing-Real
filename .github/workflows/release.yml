@@ -27,3 +27,63 @@ jobs:
           CURSE_PROJECT: ${{ secrets.CURSE_PROJECT }}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           MODRINTH_PROJECT: ${{ secrets.MODRINTH_PROJECT }}
+
+name: Release
+on: [
+  workflow_dispatch
+]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '21'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Build
+        run: ./gradlew build
+
+      - name: Get properties
+        id: properties
+        uses: christian-draeger/read-properties@1.1.1
+        with:
+          path: "./gradle.properties"
+          properties: "version minecraft_version"
+
+      - name: Publish Neoforge
+        id: publish_neoforge
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: ${{ secrets.MODRINTH_PROJECT }}
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-id: ${{ secrets.CURSE_PROJECT }}
+          curseforge-token: ${{ secrets.CURSE_TOKEN }}
+
+          files: ./neoforge/build/libs/!(*-@(dev|sources|javadoc)).jar
+          name: "[NeoForge] Fishing Real ${{ steps.properties.outputs.version }}"
+          version: ${{ steps.properties.outputs.version }}
+          version-type: release
+          changelog-file: changelog.md
+          loaders: neoforge
+          game-versions: ${{ steps.properties.outputs.minecraft_version }}
+
+      - name: Publish Fabric
+        id: publish_fabric
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: ${{ secrets.MODRINTH_PROJECT }}
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-id: ${{ secrets.CURSE_PROJECT }}
+          curseforge-token: ${{ secrets.CURSE_TOKEN }}
+
+          files: ./fabric/build/libs/!(*-@(dev|sources|javadoc)).jar
+          name: "[Fabric] Fishing Real ${{ steps.properties.outputs.version }}"
+          version: ${{ steps.properties.outputs.version }}
+          version-type: release
+          changelog-file: changelog.md
+          loaders: fabric
+          game-versions: ${{ steps.properties.outputs.minecraft_version }}
