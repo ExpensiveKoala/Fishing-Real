@@ -1,16 +1,16 @@
 package koala.fishingreal;
 
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class Config {
     public static final Config CONFIG;
-    public static final ModConfigSpec CONFIG_SPEC;
+    public static final ForgeConfigSpec CONFIG_SPEC;
     
-    public final ModConfigSpec.BooleanValue enableCatchInteraction;
-    public final ModConfigSpec.BooleanValue limitInteractionToWaterBucket;
+    public final ForgeConfigSpec.BooleanValue enableCatchInteraction;
+    public final ForgeConfigSpec.BooleanValue limitInteractionToWaterBucket;
     
-    private Config(ModConfigSpec.Builder builder) {
+    private Config(ForgeConfigSpec.Builder builder) {
         enableCatchInteraction = builder
           .comment("Whether to enable interacting with the caught entity")
           .comment("This usually means bucketing the fish if you are holding a water bucket")
@@ -22,7 +22,7 @@ public class Config {
     }
     
     static {
-        Pair<Config, ModConfigSpec> pair = new ModConfigSpec.Builder().configure(Config::new);
+        Pair<Config, ForgeConfigSpec> pair = new ForgeConfigSpec.Builder().configure(Config::new);
         CONFIG = pair.getLeft();
         CONFIG_SPEC = pair.getRight();
     }

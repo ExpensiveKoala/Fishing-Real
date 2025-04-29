@@ -1,3 +1,6 @@
+## 1.9.1-backport
+- Backports all the improvements and bugfixes from 1.21.1 to 1.20.1
+
 ## 1.9.1
 - Change project layout (Should be no change for end user). Using 1.21.1 now
 - Fix deleting fishing loot when catching multiple items

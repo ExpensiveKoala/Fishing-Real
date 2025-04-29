@@ -28,15 +28,14 @@ public class FishingReal {
 
     public static final String MOD_ID = "fishingreal";
     
-    private static TagKey<Item> WATER_BUCKET = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "buckets/water"));
-    private static TagKey<Item> FISHING_ROD = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "tools/fishing_rod"));
+    private static TagKey<Item> WATER_BUCKET = TagKey.create(Registries.ITEM, new ResourceLocation("c", "water_buckets"));
 
     public static boolean doItemStacksMatchIgnoreNBT(ItemStack stack1, ItemStack stack2) {
         return stack1.is(stack2.getItem()) && stack1.getCount() == stack2.getCount();
     }
 
     public static void onRegisterReloadListeners(BiConsumer<ResourceLocation, PreparableReloadListener> registry) {
-        registry.accept(ResourceLocation.fromNamespaceAndPath(MOD_ID, "fishing"), FISHING_MANAGER);
+        registry.accept(new ResourceLocation(MOD_ID, "fishing"), FISHING_MANAGER);
     }
 
     public static Entity convertItemStack(ItemStack itemstack, Player player, Vec3 position) {
@@ -47,7 +46,7 @@ public class FishingReal {
                 result.tag().ifPresent(resultEntity::load);
                 resultEntity.moveTo(position);
                 if (result.randomizeNbt() && resultEntity instanceof Mob resultMob) {
-                    resultMob.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(player.blockPosition()), MobSpawnType.NATURAL, null);
+                    resultMob.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(player.blockPosition()), MobSpawnType.NATURAL, null, null);
                 }
                 return resultEntity;
             }

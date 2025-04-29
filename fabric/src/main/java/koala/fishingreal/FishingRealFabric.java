@@ -1,6 +1,6 @@
 package koala.fishingreal;
 
-import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
+import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.neoforged.fml.config.ModConfig;
+import net.minecraftforge.fml.config.ModConfig;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -28,6 +28,6 @@ public class FishingRealFabric implements ModInitializer {
             }
         }));
         
-        NeoForgeConfigRegistry.INSTANCE.register(FishingReal.MOD_ID, ModConfig.Type.COMMON, Config.CONFIG_SPEC);
+        ForgeConfigRegistry.INSTANCE.register(FishingReal.MOD_ID, ModConfig.Type.COMMON, Config.CONFIG_SPEC);
     }
 }

@@ -11,7 +11,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'adopt'
-          java-version: '21'
+          java-version: '17'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
       - name: Build
@@ -24,8 +24,8 @@ jobs:
           path: "./gradle.properties"
           properties: "version minecraft_version"
 
-      - name: Publish Neoforge
-        id: publish_neoforge
+      - name: Publish Forge
+        id: publish_forge
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: ${{ secrets.MODRINTH_PROJECT }}
@@ -33,12 +33,12 @@ jobs:
           curseforge-id: ${{ secrets.CURSE_PROJECT }}
           curseforge-token: ${{ secrets.CURSE_TOKEN }}
 
-          files: ./neoforge/build/libs/!(*-@(dev|sources|javadoc)).jar
-          name: "[NeoForge] Fishing Real ${{ steps.properties.outputs.version }}"
+          files: ./forge/build/libs/!(*-@(dev|sources|javadoc)).jar
+          name: "[Forge] Fishing Real ${{ steps.properties.outputs.version }}"
           version: ${{ steps.properties.outputs.version }}
           version-type: release
           changelog-file: changelog.md
-          loaders: neoforge
+          loaders: forge
           game-versions: ${{ steps.properties.outputs.minecraft_version }}
 
       - name: Publish Fabric
