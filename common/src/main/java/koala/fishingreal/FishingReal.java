@@ -1,53 +1,74 @@
 package koala.fishingreal;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.phys.Vec3;
+import org.slf4j.Logger;
 
 import java.util.List;
-import java.util.function.BiConsumer;
+import java.util.Optional;
 
 public class FishingReal {
-    public static final FishingManager FISHING_MANAGER = new FishingManager();
 
     public static final String MOD_ID = "fishingreal";
-    
-    private static TagKey<Item> WATER_BUCKET = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "buckets/water"));
-    private static TagKey<Item> FISHING_ROD = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "tools/fishing_rod"));
+    public static final Logger LOGGER = LogUtils.getLogger();
 
-    public static boolean doItemStacksMatchIgnoreNBT(ItemStack stack1, ItemStack stack2) {
-        return stack1.is(stack2.getItem()) && stack1.getCount() == stack2.getCount();
+    public static final ResourceKey<Registry<FishingConversion>> FISHING_CONVERSION_REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.withDefaultNamespace("fishing"));
+    
+    private static TagKey<Item> WATER_BUCKET = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "buckets/water"));
+    private static TagKey<Item> FISHING_ROD = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "tools/fishing_rod"));
+
+    public static Optional<Registry<FishingConversion>> getFishingConversionRegistry(RegistryAccess registryAccess) {
+        return registryAccess.lookup(FISHING_CONVERSION_REGISTRY_KEY);
+    };
+
+    public static boolean doItemStacksMatchIgnoreNBT(ItemStack itemStack, Item conversionResult, int count) {
+        return itemStack.is(conversionResult) && itemStack.getCount() == count;
     }
 
-    public static void onRegisterReloadListeners(BiConsumer<ResourceLocation, PreparableReloadListener> registry) {
-        registry.accept(ResourceLocation.fromNamespaceAndPath(MOD_ID, "fishing"), FISHING_MANAGER);
+    public static FishingConversion.FishingResult getConversionResultFromStack(RegistryAccess registryAccess, ItemStack stack) {
+        Optional<Registry<FishingConversion>> optionalRegistry = getFishingConversionRegistry(registryAccess);
+        if(optionalRegistry.isPresent()) {
+            Registry<FishingConversion> registry = optionalRegistry.get();
+            for(FishingConversion conv : registry.stream().toList()) {
+                if(FishingReal.doItemStacksMatchIgnoreNBT(stack, conv.input().item(), conv.input().count()) && conv.result() != null) {
+                    return conv.result();
+                }
+            }
+        }
+        return null;
     }
 
     public static Entity convertItemStack(ItemStack itemstack, Player player, Vec3 position) {
         if (player != null && player.level() instanceof ServerLevel serverLevel) {
-            FishingConversion.FishingResult result = FishingReal.FISHING_MANAGER.getConversionResultFromStack(itemstack);
+            FishingConversion.FishingResult result = getConversionResultFromStack(serverLevel.registryAccess(), itemstack);
             if(result != null) {
-                Entity resultEntity = result.entity().create(player.level());
-                result.tag().ifPresent(resultEntity::load);
-                resultEntity.moveTo(position);
+                Entity resultEntity = result.entity().create(player.level(), EntitySpawnReason.NATURAL);
+                result.tag().ifPresent((tag) -> resultEntity.load(TagValueInput.create(new ProblemReporter.ScopedCollector(LOGGER), player.level().registryAccess(), tag)));
+                resultEntity.setPos(position);
                 if (result.randomizeNbt() && resultEntity instanceof Mob resultMob) {
-                    resultMob.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(player.blockPosition()), MobSpawnType.NATURAL, null);
+                    resultMob.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(player.blockPosition()), EntitySpawnReason.NATURAL, null);
                 }
                 return resultEntity;
             }
@@ -89,12 +110,12 @@ public class FishingReal {
         boolean isWaterBucketOff = player.getOffhandItem().is(WATER_BUCKET);
         
         if (!restrictToWaterBucket || isWaterBucketOff) {
-            interactionResult = player.interactOn(entity, InteractionHand.OFF_HAND);
+            interactionResult = player.interactOn(entity, InteractionHand.OFF_HAND, player.position());
         }
         
         if (!interactionResult.consumesAction()) {
             if (!restrictToWaterBucket || isWaterBucketMain) {
-                player.interactOn(entity, InteractionHand.MAIN_HAND);
+                player.interactOn(entity, InteractionHand.MAIN_HAND, player.position());
             }
         }
     }

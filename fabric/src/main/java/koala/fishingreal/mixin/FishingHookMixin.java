@@ -17,12 +17,12 @@ import java.util.List;
 public abstract class FishingHookMixin {
     
     @Inject(method = "retrieve", at = @At(value = "INVOKE_ASSIGN", shift = At.Shift.AFTER, target = "Lnet/minecraft/world/level/storage/loot/LootTable;getRandomItems(Lnet/minecraft/world/level/storage/loot/LootParams;)Lit/unimi/dsi/fastutil/objects/ObjectArrayList;"))
-    public void onFishCaught(ItemStack stack, CallbackInfoReturnable<Integer> cir, @Local Player player, @Local List<ItemStack> list) {
-        for (ItemStack itemStack : list) {
-            Entity convertedEntity = FishingReal.convertItemStack(itemStack, player, ((FishingHook)(Object)this).position());
+    public void onFishCaught(ItemStack rod, CallbackInfoReturnable<Integer> cir, @Local(name = "owner") Player owner, @Local(name = "items") List<ItemStack> items) {
+        for (ItemStack itemStack : items) {
+            Entity convertedEntity = FishingReal.convertItemStack(itemStack, owner, ((FishingHook)(Object)this).position());
             if (convertedEntity != null) {
                 for (int i = 0; i < itemStack.getCount(); i++) {
-                    FishingReal.fishUpEntity(convertedEntity, (FishingHook)(Object)this, itemStack, player);
+                    FishingReal.fishUpEntity(convertedEntity, (FishingHook)(Object)this, itemStack, owner);
                 }
                 // Effectively remove the item from the loot pool
                 itemStack.setCount(0);
