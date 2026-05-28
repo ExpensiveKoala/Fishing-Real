@@ -1,3 +1,8 @@
+## 1.10.0
+- Update to 26.1.2
+- Internal rewrite of datapack system. Side-effect is an invalid item/entity ID will cause datapack to fail to load.
+- Fixed issue where passengers weren't loaded.
+
 ## 1.9.1
 - Change project layout (Should be no change for end user). Using 1.21.1 now
 - Fix deleting fishing loot when catching multiple items
