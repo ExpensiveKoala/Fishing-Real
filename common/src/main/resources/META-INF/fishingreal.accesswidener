@@ -1,0 +1,3 @@
+accessWidener v2 official
+
+accessible method net/minecraft/world/entity/EntityType loadPassengersRecursive (Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/level/storage/ValueInput;Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/EntitySpawnReason;Lnet/minecraft/world/entity/EntityProcessor;)Lnet/minecraft/world/entity/Entity;
