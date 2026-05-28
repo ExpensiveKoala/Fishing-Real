@@ -69,6 +69,7 @@ public class FishingReal {
                     resultEntity.load(valueInput);
                     EntityType.loadPassengersRecursive(resultEntity, valueInput, player.level(), EntitySpawnReason.NATURAL, EntityProcessor.NOP);
                 });
+                resultEntity.setPos(position);
                 if (result.randomizeNbt() && resultEntity instanceof Mob resultMob && player.level() instanceof ServerLevel serverLevel) {
                     resultMob.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(player.blockPosition()), EntitySpawnReason.NATURAL, null);
                 }
