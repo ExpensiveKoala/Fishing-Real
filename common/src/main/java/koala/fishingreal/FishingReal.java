@@ -15,14 +15,13 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 
@@ -61,13 +60,16 @@ public class FishingReal {
     }
 
     public static Entity convertItemStack(ItemStack itemstack, Player player, Vec3 position) {
-        if (player != null && player.level() instanceof ServerLevel serverLevel) {
-            FishingConversion.FishingResult result = getConversionResultFromStack(serverLevel.registryAccess(), itemstack);
+        if (player != null) {
+            FishingConversion.FishingResult result = getConversionResultFromStack(player.level().registryAccess(), itemstack);
             if(result != null) {
                 Entity resultEntity = result.entity().create(player.level(), EntitySpawnReason.NATURAL);
-                result.tag().ifPresent((tag) -> resultEntity.load(TagValueInput.create(new ProblemReporter.ScopedCollector(LOGGER), player.level().registryAccess(), tag)));
-                resultEntity.setPos(position);
-                if (result.randomizeNbt() && resultEntity instanceof Mob resultMob) {
+                result.tag().ifPresent((tag) -> {
+                    ValueInput valueInput = TagValueInput.create(new ProblemReporter.ScopedCollector(LOGGER), player.level().registryAccess(), tag);
+                    resultEntity.load(valueInput);
+                    EntityType.loadPassengersRecursive(resultEntity, valueInput, player.level(), EntitySpawnReason.NATURAL, EntityProcessor.NOP);
+                });
+                if (result.randomizeNbt() && resultEntity instanceof Mob resultMob && player.level() instanceof ServerLevel serverLevel) {
                     resultMob.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(player.blockPosition()), EntitySpawnReason.NATURAL, null);
                 }
                 return resultEntity;
@@ -85,10 +87,12 @@ public class FishingReal {
         double dZ = player.getZ() - hook.getZ();
         double strength = 0.12;
         double verticalStrength = 0.18;
-        entity.setPos(hook.getX(), hook.getY(), hook.getZ());
+        entity.getSelfAndPassengers().forEach(e -> e.setPos(hook.getX(), hook.getY(), hook.getZ()));
         entity.setDeltaMovement(dX * strength, dY * strength + Math.sqrt(Math.sqrt(dX * dX + dY * dY + dZ * dZ)) * verticalStrength, dZ * strength);
-        player.level().addFreshEntity(entity);
-        
+        if(player.level() instanceof ServerLevel serverLevel) {
+            serverLevel.tryAddFreshEntityWithPassengers(entity);
+        }
+
         // Stack is empty now, so we need to award stats and trigger CriteriaTriggers ourselves
         if (stack.is(ItemTags.FISHES)) {
             player.awardStat(Stats.FISH_CAUGHT, 1);
